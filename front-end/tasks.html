@@ -2,43 +2,44 @@
 <html data-wf-page="681b1f22853d2d51a5088570" data-wf-site="681b1f21853d2d51a5088437" data-wf-status="1" lang="en">
 <head>
     <meta charset="utf-8" />
-        <title>Taskoinator</title>
-        <meta name="description" content="Aplikacja do zarządzania zadaniami w rodzinie lub zespoles." />
-        <meta name="viewport" content="width=device-width, initial-scale=1" />
-        <meta name="generator" content="Webflow" />
+    <title>Taskoinator</title>
+    <!-- Page description and responsive settings -->
+    <meta name="description" content="Aplikacja do zarządzania zadaniami w rodzinie lub zespoles." />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <meta name="generator" content="Webflow" />
+    <!-- Main stylesheet -->
     <link href="css/stylesheet.css" rel="stylesheet" type="text/css" />
+    <!-- Webflow script for navigation and interactions -->
     <script type="text/javascript">
         !function(o, c) {
             var n = c.documentElement, t = " w-mod-";
             n.className += t + "js", ("ontouchstart" in o || o.DocumentTouch && c instanceof DocumentTouch) && (n.className += t + "touch")
         }(window, document);
     </script>
+    <!-- Favicon and webclip icons -->
     <link href="https://cdn.prod.website-files.com/66d89db32b418832a387e57c/66d9022e871f033134609979_Favicon.jpg" rel="shortcut icon" type="image/x-icon" />
     <link href="https://cdn.prod.website-files.com/66d89db32b418832a387e57c/66d9023148c167f356654e89_webclip.jpg" rel="apple-touch-icon" />
 </head>
 <body class="body">
-    <!-- Navbar -->
+    <!-- Main navigation bar (top navbar) -->
     <div data-animation="default" data-collapse="medium" data-duration="400" data-easing="ease" data-easing2="ease" role="banner" class="navbar w-nav">
-            <div class="padding-global">
-                <div class="container w-container">
-                    <div class="navbar-component">
-                        <a href="/front-end/" data-w-id="6deb3682-e1f7-9f5f-adeb-87fc1448026f" class="brand w-nav-brand">
-                            <img src="logo_taskoinator.png" loading="lazy" alt="" />
-                        </a>
-                        <div class="nav-menu-wrap">
-                            <div>
-                                <nav role="navigation" class="nav-menu w-nav-menu">
-                                    <a href="/front-end/" class="nav-link w-inline-block">
-                                        <div>TASKOINATOR</div>
-                                    </a>
-                                    <div class="mobile-navbar-content">
-                                        <a href="/front-end/home" class="link-block-navbar w-inline-block">
-                                            <div>Log out</div>
-                                        </a>
-                                        <a href="/front-end/stats.html" class="link-block-navbar w-inline-block">
-                                            <div>My stats</div>
-                                        </a>
-                                        <a href="/front-end/tasks.html" class="link-block-navbar w-inline-block">
+        <div class="padding-global">
+            <div class="container w-container">
+                <div class="navbar-component">
+                    <!-- Application logo -->
+                    <a href="/front-end/" data-w-id="6deb3682-e1f7-9f5f-adeb-87fc1448026f" class="brand w-nav-brand">
+                        <img src="logo_taskoinator.png" loading="lazy" alt="" />
+                    </a>
+                    <div class="nav-menu-wrap">
+                        <div>
+                            <!-- Navigation menu (mobile + desktop) -->
+                            <nav role="navigation" class="nav-menu w-nav-menu">
+                                <a href="/front-end/" class="nav-link w-inline-block">
+                                    <div>TASKOINATOR</div>
+                                </a>
+                                <div class="mobile-navbar-content">
+                                    <!-- Mobile navigation links -->
+                                    <a href="/front-end/home" class="link-block-navbar w-inline-block"></a>
                                             <div>My tasks</div>
                                         </a>
                                         <a href="/front-end/settings.html" class="link-block-navbar w-inline-block">
@@ -47,12 +48,14 @@
                                     </div>
                                 </nav>
                                 <div class="nav-menu-wrap">
+                                    <!-- Hamburger menu button for mobile -->
                                     <div class="menu-button w-nav-button">
                                         <div class="menu-icon w-icon-nav-menu"></div>
                                     </div>
                                 </div>
                             </div>
                             <div class="right-navbar-content">
+                                <!-- Right side navigation links -->
                                 <a href="/front-end/index.html" class="link-block-navbar w-inline-block">
                                     <div>Log out</div>
                                 </a>
@@ -72,7 +75,7 @@
             </div>
         </div>
 
-    <!-- Main Section -->
+    <!-- Main content section -->
     <section>
         <div class="padding-global">
             <div class="w-layout-blockcontainer container w-container">
@@ -87,13 +90,14 @@
                                         }
                                     }
                                 </style>
-                                <!-- Teams Navbar -->
+                                <!-- Teams sidebar navigation (desktop and mobile) -->
                                 <div data-animation="default" data-collapse="medium" data-duration="400" data-easing="ease" data-easing2="ease" role="banner" class="desktop-only">
                                         <div class="w-container"  style="display: flex; flex-direction: column; gap: 10px;">
                                             <a href="#" class="w-nav-brand">
                                                 <div class="text-block-5" style="color: #dfebee;">Teams</div>
                                             </a>
                                             <nav role="navigation" class="nav-menu-3 w-nav-menu" style="display: flex; flex-direction: column; gap: 10px;">
+                                                <!-- List of teams (desktop) -->
                                                 <div class="check-item">
                                                     <div class="check-icon-wrap-checked">
                                                         <img width="14" height="12" alt="Icon" src="https://cdn.prod.website-files.com/681b1f21853d2d51a5088437/681b1f22853d2d51a50885e4_Check%20Icon.svg" loading="lazy" class="check-icon" />
@@ -124,6 +128,7 @@
                                                 <div class="text-block-5">Teams</div>
                                             </a>
                                             <nav role="navigation" class="nav-menu-3 w-nav-menu">
+                                                <!-- List of teams (mobile) -->
                                                 <div class="check-item">
                                                     <div class="check-icon-wrap-checked">
                                                         <img width="14" height="12" alt="Icon" src="https://cdn.prod.website-files.com/681b1f21853d2d51a5088437/681b1f22853d2d51a50885e4_Check%20Icon.svg" loading="lazy" class="check-icon" />
@@ -148,10 +153,11 @@
                                             <div class="w-icon-nav-menu"></div>
                                         </div>
                                     </div>
-                                <!-- Hashtag Navbar -->
+                                <!-- Hashtag navigation (categories/tags for tasks) -->
                                 <div data-animation="default" data-collapse="medium" data-duration="400" data-easing="ease" data-easing2="ease" role="banner" class="navbar-3 mobile-burger w-nav">
                                         <div class="container-8 w-container">
                                             <nav role="navigation" class="nav-menu-3 w-nav-menu">
+                                                <!-- Example hashtag and teams under it -->
                                                 <div class="hashtag">#kuchnia</div>
                                                 <div class="check-item">
                                                     <div class="check-icon-wrap-checked">
@@ -173,6 +179,7 @@
                                                 </div>
                                             </nav>
                                             <nav role="navigation" class="nav-menu-3 w-nav-menu">
+                                                <!-- Another example hashtag and teams -->
                                                 <div class="hashtag">#kuchnia</div>
                                                 <div class="check-item">
                                                     <div class="check-icon-wrap-checked">
@@ -195,29 +202,29 @@
                                             </nav>
                                         </div>
                                 </div>
-                                <!-- Team 1 Tasks -->
+                                <!-- Tasks list for selected team -->
                                 <div class="container-4 w-container">
                                     <div class="text-block-2">Tasks:</div>
-                                    <!-- Task 1 -->
+                                    <!-- Example Task 1 -->
                                     <div class="w-layout-blockcontainer container-5 w-container task-item">
                                         <div class="check-icon-wrap">
                                             <img width="14" height="12" alt="Icon" src="https://cdn.prod.website-files.com/681b1f21853d2d51a5088437/681b1f22853d2d51a50885e4_Check%20Icon.svg" loading="lazy" class="check-icon" />
                                         </div>
                                         <div class="text-block-3">Subscribe to Newsletter</div>
                                         <div class="text-block-4">21.07.2025</div>
-                                        <!-- Dropdown for mobile -->
+                                        <!-- Dropdown with task details for mobile -->
                                         <details class="task-details">
                                             <summary class="task-details-summary">Details</summary>
                                             <div class="hashtag">#kuchnia</div>
                                             <div class="text-block-6">@majonez</div>
                                             <div class="number_red">1</div>
                                         </details>
-                                        <!-- Desktop only -->
+                                        <!-- Task details for desktop -->
                                         <div class="hashtag desktop-only">#kuchnia</div>
                                         <div class="text-block-6 desktop-only">@majonez</div>
                                         <div class="number_red desktop-only">1</div>
                                     </div>
-                                    <!-- Task 2 -->
+                                    <!-- Example Task 2 -->
                                     <div class="w-layout-blockcontainer container-5 w-container task-item">
                                         <div class="check-icon-wrap">
                                             <img width="14" height="12" alt="Icon" src="https://cdn.prod.website-files.com/681b1f21853d2d51a5088437/681b1f22853d2d51a50885e4_Check%20Icon.svg" loading="lazy" class="check-icon" />
@@ -234,7 +241,7 @@
                                         <div class="text-block-6 desktop-only">@majonez</div>
                                         <div class="number_orange desktop-only">2</div>
                                     </div>
-                                    <!-- Task 3 -->
+                                    <!-- Example Task 3 -->
                                     <div class="w-layout-blockcontainer container-5 w-container task-item">
                                         <div class="check-icon-wrap">
                                             <img width="14" height="12" alt="Icon" src="https://cdn.prod.website-files.com/681b1f21853d2d51a5088437/681b1f22853d2d51a50885e4_Check%20Icon.svg" loading="lazy" class="check-icon" />
@@ -251,7 +258,7 @@
                                         <div class="text-block-6 desktop-only">@majonez</div>
                                         <div class="number_green desktop-only">3</div>
                                     </div>
-                                    <!-- Task 4 -->
+                                    <!-- Example Task 4 -->
                                     <div class="w-layout-blockcontainer container-5 w-container task-item">
                                         <div class="check-icon-wrap">
                                             <img width="14" height="12" alt="Icon" src="https://cdn.prod.website-files.com/681b1f21853d2d51a5088437/681b1f22853d2d51a50885e4_Check%20Icon.svg" loading="lazy" class="check-icon" />
@@ -269,7 +276,7 @@
                                         <div class="number_blue desktop-only">4</div>
                                     </div>
                                 </div>
-                                <!-- End Team 1 Tasks -->
+                                <!-- End of tasks list -->
                             </div>
                         </div>
                     </div>
@@ -278,7 +285,7 @@
         </div>
     </section>
 
-    <!-- Footer -->
+    <!-- Footer section -->
     <footer class="section">
         <div class="padding-global">
             <div class="w-layout-blockcontainer container w-container">
@@ -294,30 +301,30 @@
         </div>
     </footer>
 
-    <!-- Scripts -->
+    <!-- Scripts for Webflow and custom interactions -->
     <script src="js/jquery.js?site=681b1f21853d2d51a5088437" type="text/javascript"></script>
     <script src="js/webflow.schunk.36b8fb49256177c8.js" type="text/javascript"></script>
     <script src="js/webflow.schunk.3718917d6b52e592.js" type="text/javascript"></script>
     <script src="js/webflow-script.js" type="text/javascript"></script>
     <script>
+        // Script to handle team selection and close dropdown on mobile
         document.addEventListener('DOMContentLoaded', function() {
             const teamLinks = document.querySelectorAll('.nav-menu-3.w-nav-menu .check-item');
 
             teamLinks.forEach(link => {
                 link.addEventListener('click', function(event) {
-                    event.preventDefault(); // Zapobiega domyślnej akcji kliknięcia (nawigacji)
-                    // Tutaj możesz dodać kod, jeśli chcesz, aby dropdown się zamknął
-                    const navbar = this.closest('.w-nav'); // Znajduje najbliższy element nawigacji Webflow
+                    event.preventDefault(); // Prevent default navigation
+                    // Optionally close dropdown after selection
+                    const navbar = this.closest('.w-nav');
                     if (navbar && navbar.classList.contains('w--open')) {
                         const menuButton = navbar.querySelector('.w-nav-button');
                         if (menuButton) {
-                            menuButton.click(); // Symuluje kliknięcie przycisku menu, aby zamknąć dropdown
+                            menuButton.click(); // Simulate menu button click to close dropdown
                         }
                     }
                 });
             });
         });
     </script>
-</body>
 </body>
 </html>
