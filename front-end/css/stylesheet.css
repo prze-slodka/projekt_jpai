@@ -856,6 +856,7 @@ textarea.w-input, textarea.w-select {
   }
 }
 
+/* Shows elements on small screens that are hidden on larger devices */
 @media screen and (max-width: 767px) {
   .w-hidden-main, .w-hidden-medium {
     display: inherit !important;
@@ -925,6 +926,8 @@ textarea.w-input, textarea.w-select {
   }
 }
 
+/* Responsive styles for screens up to 479px: 
+  Adjusts container width and ensures hidden elements are shown. */
 @media screen and (max-width: 479px) {
   .w-container {
     max-width: none;
@@ -6147,67 +6150,81 @@ blockquote {
 #w-node-_4ef4cf6b-b6f7-79e8-09e3-947f0eee47d5-a5088574, #w-node-_931d7281-1713-6696-5987-d4f07fbb3a67-a5088575 {
   grid-area: span 1 / span 1 / span 1 / span 1;
 }
-
+/* Toggle switch container */
 .toggle-switch {
-    position: relative;
-    display: inline-block;
-    width: 48px;
-    height: 24px;
+  position: relative;
+  display: inline-block;
+  width: 48px;
+  height: 24px;
 }
 
+/* Hide toggle input */
 .toggle-switch input {
-    opacity: 0;
-    width: 0;
-    height: 0;
+  opacity: 0;
+  width: 0;
+  height: 0;
 }
 
+/* Toggle slider bar */
 .slider {
-    position: absolute;
-    cursor: pointer;
-    top: 0; left: 0; right: 0; bottom: 0;
-    background-color: #3b5663;
-    transition: .3s;
-    border-radius: 24px;
+  position: absolute;
+  cursor: pointer;
+  top: 0; left: 0; right: 0; bottom: 0;
+  background-color: #3b5663;
+  transition: .3s;
+  border-radius: 24px;
 }
 
+/* Toggle slider knob */
 .slider:before {
-    position: absolute;
-    content: "";
-    height: 18px;
-    width: 18px;
-    left: 3px;
-    bottom: 3px;
-    background-color: #fff;
-    transition: .3s;
-    border-radius: 50%;
+  position: absolute;
+  content: "";
+  height: 18px;
+  width: 18px;
+  left: 3px;
+  bottom: 3px;
+  background-color: #fff;
+  transition: .3s;
+  border-radius: 50%;
 }
 
+/* Slider color when checked */
 .toggle-switch input:checked + .slider {
-    background-color: #4D7D8D;
+  background-color: #4D7D8D;
 }
+
+/* Move knob when checked */
 .toggle-switch input:checked + .slider:before {
-    transform: translateX(24px);
+  transform: translateX(24px);
 }
+
+/* Custom select style */
 .custom-select {
-    background: #1f1f1f;
-    color: #fff;
-    border: 1px solid #3b5663;
+  background: #1f1f1f;
+  color: #fff;
+  border: 1px solid #3b5663;
 }
+
+/* Custom select option style */
 .custom-select option {
-    background: #1f1f1f;
-    color: #fff;
+  background: #1f1f1f;
+  color: #fff;
 }
+
+/* Option hover and selected style */
 .custom-select option:hover,
 .custom-select option:checked {
-    background: #3b5663;
-    color: #fff;
+  background: #3b5663;
+  color: #fff;
 }
-/* ja tu edytuje */
+
+/* Single task item */
 .task-item {
   display: flex;
   align-items: flex-start; 
 }
 
+/* Task details container */
 .task-item > details {
   display: flex;
   flex-direction: column; 
@@ -6215,13 +6232,14 @@ blockquote {
   margin-top: 0; 
 }
 
+/* Task details summary header */
 .task-details-summary {
   margin-bottom: 5px; 
 }
 
-@media screen and (min-width: 992px) { /* Możesz dostosować tę szerokość */
+/* Hide summary header on desktop */
+@media screen and (min-width: 992px) {
   .task-details-summary {
     display: none;
   }
 }
-
