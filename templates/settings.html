@@ -155,100 +155,164 @@
                                 action="/settings"
                             >
                                 <div class="form-content">
-                                    <!-- Input: Team name -->
-                                    <div
-                                        class="name-wrapper-contact"
-                                        style="margin-bottom: 1.5rem"
-                                    >
-                                        <label
-                                            for="team-name"
-                                            class="text-size-medium-vw"
+                                    {% if not team %}
+                                        <!-- Only show invite code input if not in a team -->
+                                        <div
+                                            class="name-wrapper-contact"
+                                            style="margin-bottom: 1.5rem"
                                         >
-                                            Team name:
-                                        </label>
-                                        <input
-                                            class="text-field-contact w-input"
-                                            maxlength="256"
-                                            name="team_name"
-                                            placeholder="Enter team name"
-                                            type="text"
-                                            id="team-name"
-                                            value=""
-                                        />
-                                    </div>
-                                    <!-- Input: Team code and Join button -->
-                                    <div
-                                        class="name-wrapper-contact"
-                                        style="margin-bottom: 1.5rem"
-                                    >
-                                        <label
-                                            for="team-code"
-                                            class="text-size-medium-vw"
+                                            <label
+                                                for="team-code"
+                                                class="text-size-medium-vw"
+                                            >
+                                                Team code:
+                                            </label>
+                                            <input
+                                                class="text-field-contact w-input"
+                                                maxlength="256"
+                                                name="team_code"
+                                                placeholder="Enter team code"
+                                                type="text"
+                                                id="team-code"
+                                                style="
+                                                    width: 200px;
+                                                    display: inline-block;
+                                                    margin-right: 1rem;
+                                                "
+                                            />
+                                            <button
+                                                type="submit"
+                                                name="action"
+                                                value="join_team"
+                                                class="primary-button w-button"
+                                                style="
+                                                    display: inline-block;
+                                                    vertical-align: middle;
+                                                "
+                                            >
+                                                Join
+                                            </button>
+                                        </div>
+                                    {% else %}
+                                        {% if is_leader %}
+                                            <div
+                                                class="heading-3 text-weight-bold"
+                                                style="margin-bottom: 1rem"
+                                            >
+                                                Team management
+                                            </div>
+                                        {% endif %}
+                                        <div
+                                            class="name-wrapper-contact"
+                                            style="margin-bottom: 1.5rem"
                                         >
-                                            Team code:
-                                        </label>
-                                        <input
-                                            class="text-field-contact w-input"
-                                            maxlength="256"
-                                            name="team_code"
-                                            placeholder="Enter team code"
-                                            type="text"
-                                            id="team-code"
-                                            style="
-                                                width: 200px;
-                                                display: inline-block;
-                                                margin-right: 1rem;
-                                            "
-                                        />
-                                        <button
-                                            type="submit"
-                                            name="action"
-                                            value="join_team"
-                                            class="primary-button w-button"
-                                            style="
-                                                display: inline-block;
-                                                vertical-align: middle;
-                                            "
+                                            <label
+                                                for="team-name"
+                                                class="text-size-medium-vw"
+                                            >
+                                                Team name:
+                                            </label>
+                                            {% if is_leader %}
+                                                <input
+                                                    class="text-field-contact w-input"
+                                                    maxlength="256"
+                                                    name="team_name"
+                                                    placeholder="Enter team name"
+                                                    type="text"
+                                                    id="team-name"
+                                                    value="{{ team.name }}"
+                                                    style="
+                                                        width: 200px;
+                                                        display: inline-block;
+                                                        margin-right: 1rem;
+                                                    "
+                                                />
+                                                <button
+                                                    type="submit"
+                                                    name="action"
+                                                    value="change_team_name"
+                                                    class="primary-button w-button"
+                                                    style="
+                                                        display: inline-block;
+                                                        vertical-align: middle;
+                                                    "
+                                                >
+                                                    Change
+                                                </button>
+                                            {% else %}
+                                                <input
+                                                    class="text-field-contact w-input"
+                                                    maxlength="256"
+                                                    name="team_name"
+                                                    type="text"
+                                                    id="team-name"
+                                                    value="{{ team.name }}"
+                                                    readonly
+                                                    style="
+                                                        width: 200px;
+                                                        display: inline-block;
+                                                        margin-right: 1rem;
+                                                        background: #eee;
+                                                    "
+                                                />
+                                            {% endif %}
+                                        </div>
+                                        <!-- Team members list -->
+                                        <div
+                                            class="name-wrapper-contact"
+                                            style="margin-bottom: 2rem;"
                                         >
-                                            Join
-                                        </button>
-                                    </div>
-                                    <!-- Dropdown: User selection -->
-                                    <div
-                                        class="name-wrapper-contact"
-                                        style="
-                                            margin-bottom: 2rem;
-                                            display: flex;
-                                            flex-direction: column;
-                                            align-items: center;
-                                        "
-                                    >
-                                        <label
-                                            for="users"
-                                            class="text-size-medium-vw"
-                                            style="
-                                                margin-bottom: 0.5rem;
-                                                text-align: center;
-                                                width: 100%;
-                                            "
-                                        >
-                                            Users:
-                                        </label>
-                                        <select
-                                            id="users"
-                                            name="selected_user"
-                                            class="w-input custom-select"
-                                            style="
-                                                width: 320px;
-                                                max-width: 100%;
-                                                text-align: center;
-                                            "
-                                        >
-                                            <option>User1</option>
-                                            <option>User2</option>
-                                            <option>User3</option>
-                                        </select>
-                                    </div>
+                                            <label
+                                                class="text-size-medium-vw"
+                                                style="
+                                                    margin-bottom: 0.5rem;
+                                                "
+                                            >
+                                                Team members:
+                                            </label>
+                                            <ul
+                                                style="
+                                                    list-style: none;
+                                                    padding: 0;
+                                                "
+                                            >
+                                                {% for member in team_users %}
+                                                    <li
+                                                        style="
+                                                            margin-bottom: 0.5rem;
+                                                        "
+                                                    >
+                                                        {{ member.nick }}
+                                                        {% if is_leader and member.id != user.id %}
+                                                            <form
+                                                                method="POST"
+                                                                action="/settings"
+                                                                style="display:inline;"
+                                                            >
+                                                                <input
+                                                                    type="hidden"
+                                                                    name="remove_user_id"
+                                                                    value="{{ member.id }}"
+                                                                />
+                                                                <button
+                                                                    type="submit"
+                                                                    name="action"
+                                                                    value="remove_member"
+                                                                    class="primary-button w-button"
+                                                                    style="
+                                                                        padding: 2px 8px;
+                                                                        font-size: 0.9em;
+                                                                    "
+                                                                >
+                                                                    Remove
+                                                                </button>
+                                                            </form>
+                                                        {% endif %}
+                                                    </li>
+                                                {% endfor %}
+                                            </ul>
+                                        </div>
+                                    {% endif %}
                                 </div>
 
                                 <!-- Notification Settings Section -->
@@ -283,6 +347,7 @@
                                                 type="checkbox"
                                                 id="notif-new-task"
                                                 name="notif_new_task"
+                                                {% if notification_settings.new_task %}checked{% endif %}
                                             />
                                             <span class="slider"></span>
                                         </label>
@@ -308,6 +373,7 @@
                                                 type="checkbox"
                                                 id="notif-task-completed"
                                                 name="notif_task_completed"
+                                                {% if notification_settings.task_completed %}checked{% endif %}
                                             />
                                             <span class="slider"></span>
                                         </label>
@@ -333,6 +399,7 @@
                                                 type="checkbox"
                                                 id="notif-upcoming-deadline"
                                                 name="notif_upcoming_deadline"
+                                                {% if notification_settings.upcoming_deadline %}checked{% endif %}
                                             />
                                             <span class="slider"></span>
                                         </label>
@@ -358,6 +425,7 @@
                                                 type="checkbox"
                                                 id="notif-deadline-missed"
                                                 name="notif_deadline_missed"
+                                                {% if notification_settings.deadline_missed %}checked{% endif %}
                                             />
                                             <span class="slider"></span>
                                         </label>
