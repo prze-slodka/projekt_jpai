@@ -1,0 +1,10 @@
+#comments
+    komentarze do main + do innych plików
+
+#settings
+    naprawić aby dla admina zespołu przycisk do usuwania members był po prawiej stronie od membera a nie po lewej
+    kolor przy zespole bo się zjebał na jasny
+
+#stats
+    naprawić coś się zepsuło nie ma css i sie rozjeżdża
+    

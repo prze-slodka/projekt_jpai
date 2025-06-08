@@ -1,7 +1,8 @@
-from flask import Flask, render_template, redirect, url_for, request, session, flash
+from flask import Flask, render_template, redirect, url_for, request, session, flash, jsonify
 import mysql.connector
 import hashlib
 import json
+from datetime import datetime, timedelta
 
 app = Flask(
     __name__,
@@ -9,6 +10,14 @@ app = Flask(
     template_folder='templates'
 )
 app.secret_key = 'to_change'  # Change this in production
+
+# Add this filter after app creation
+@app.template_filter('from_json')
+def from_json_filter(s):
+    try:
+        return json.loads(s)
+    except Exception:
+        return []
 
 def get_db():
     return mysql.connector.connect(
@@ -176,14 +185,50 @@ def stats():
     cursor = db.cursor(dictionary=True)
     user_id = session['user_id']
     team_fk = session.get('team_fk')
-    # Example stats: completed tasks by user, by team, etc.
-    cursor.execute("SELECT COUNT(*) as completed FROM tasks WHERE assigned_user=%s AND status=1", (user_id,))
-    completed = cursor.fetchone()['completed']
-    cursor.execute("SELECT COUNT(*) as team_completed FROM tasks WHERE team_id=%s AND status=1", (team_fk,))
-    team_completed = cursor.fetchone()['team_completed'] if team_fk else 0
+
+    # Completed tasks for this user
+    cursor.execute("SELECT title, completion_date FROM tasks WHERE assigned_user=%s AND status=1", (user_id,))
+    user_completed_tasks = cursor.fetchall()
+
+    # Completed tasks for this team
+    team_completed = 0
+    if team_fk:
+        cursor.execute("SELECT COUNT(*) as team_completed FROM tasks WHERE team_id=%s AND status=1", (team_fk,))
+        team_completed = cursor.fetchone()['team_completed']
+
+    # Calculate stats for today, this week, this month
+    today = datetime.now().date()
+    week_start = today - timedelta(days=today.weekday())
+    month_start = today.replace(day=1)
+
+    completed_today = 0
+    completed_week = 0
+    completed_month = 0
+    completed_titles = []
+
+    for task in user_completed_tasks:
+        if task['completion_date']:
+            comp_date = task['completion_date']
+            if isinstance(comp_date, str):
+                comp_date = datetime.strptime(comp_date, "%Y-%m-%d").date()
+            if comp_date == today:
+                completed_today += 1
+            if comp_date >= week_start:
+                completed_week += 1
+            if comp_date >= month_start:
+                completed_month += 1
+            completed_titles.append(task['title'])
+
     cursor.close()
     db.close()
-    return render_template('stats.html', completed=completed, team_completed=team_completed)
+    return render_template(
+        'stats.html',
+        completed_titles=completed_titles,
+        completed_today=completed_today,
+        completed_week=completed_week,
+        completed_month=completed_month,
+        team_completed=team_completed
+    )
 
 @app.route('/tasks', methods=['GET', 'POST'])
 def tasks():
@@ -192,25 +237,32 @@ def tasks():
     db = get_db()
     cursor = db.cursor(dictionary=True)
     user_id = session['user_id']
-    team_fk = session.get('team_fk')
-    if request.method == 'POST':
-        # Example: create new task
-        title = request.form.get('title')
-        tags = request.form.get('tags', '[]')
-        assigned_user = request.form.get('assigned_user')
-        priority = int(request.form.get('priority', 1))
-        cursor.execute(
-            "INSERT INTO tasks (team_id, title, tags, assigned_user, priority) VALUES (%s, %s, %s, %s, %s)",
-            (team_fk, title, tags, assigned_user, priority)
-        )
-        db.commit()
-    # Load tasks for the user's team
+
+    # Handle AJAX completion toggle
+    if request.method == 'POST' and request.is_json:
+        data = request.get_json()
+        task_id = data.get('task_id')
+        new_status = data.get('status')
+        if task_id is not None and new_status in (0, 1, True, False):
+            cursor.execute(
+                "UPDATE tasks SET status=%s WHERE id=%s AND assigned_user=%s",
+                (1 if new_status else 0, task_id, user_id)
+            )
+            db.commit()
+            cursor.close()
+            db.close()
+            return jsonify(success=True)
+        cursor.close()
+        db.close()
+        return jsonify(success=False), 400
+
+    # Get all tasks assigned to this user, order unfinished first
     cursor.execute(
-        "SELECT t.*, u.nick as assigned_nick FROM tasks t LEFT JOIN users u ON t.assigned_user=u.id WHERE t.team_id=%s",
-        (team_fk,)
+        "SELECT t.*, u.nick as assigned_nick FROM tasks t LEFT JOIN users u ON t.assigned_user=u.id WHERE t.assigned_user=%s ORDER BY t.status ASC, t.id ASC",
+        (user_id,)
     )
     tasks = cursor.fetchall()
-    cursor.execute("SELECT id, nick FROM users WHERE team_fk=%s", (team_fk,))
+    cursor.execute("SELECT id, nick FROM users WHERE team_fk=%s", (session.get('team_fk'),))
     team_users = cursor.fetchall()
     cursor.close()
     db.close()

@@ -38,6 +38,37 @@
             href="{{ url_for('static', filename='images/webclip.jpg') }}"
             rel="apple-touch-icon"
         />
+        <style>
+            /* Remove default checkbox circle background and allow checking/unchecking */
+            .task-status-checkbox {
+                appearance: none;
+                -webkit-appearance: none;
+                width: 18px;
+                height: 18px;
+                border: 2px solid #888;
+                border-radius: 4px;
+                background: #fff;
+                cursor: pointer;
+                vertical-align: middle;
+                position: relative;
+            }
+            .task-status-checkbox:checked {
+                background: #4caf50;
+                border-color: #4caf50;
+            }
+            .task-status-checkbox:checked::after {
+                content: '';
+                display: block;
+                position: absolute;
+                left: 5px;
+                top: 1px;
+                width: 4px;
+                height: 9px;
+                border: solid #fff;
+                border-width: 0 2px 2px 0;
+                transform: rotate(45deg);
+            }
+        </style>
     </head>
     <body class="body">
         <div
@@ -480,198 +511,56 @@
                                     </div>
                                     <div class="container-4 w-container">
                                         <div class="text-block-2">Tasks:</div>
-                                        <div
-                                            class="w-layout-blockcontainer container-5 w-container task-item"
-                                        >
-                                            <div class="check-icon-wrap">
-                                                <img
-                                                    width="14"
-                                                    height="12"
-                                                    alt="Icon"
-                                                    src="https://cdn.prod.website-files.com/681b1f21853d2d51a5088437/681b1f22853d2d51a50885e4_Check%20Icon.svg"
-                                                    loading="lazy"
-                                                    class="check-icon"
-                                                />
-                                            </div>
-                                            <div class="text-block-3">
-                                                Subscribe to Newsletter
-                                            </div>
-                                            <div class="text-block-4">
-                                                21.07.2025
-                                            </div>
-                                            <details class="task-details">
-                                                <summary
-                                                    class="task-details-summary"
-                                                >
-                                                    Details
-                                                </summary>
-                                                <div class="hashtag">
-                                                    #kuchnia
+                                        {% if tasks and tasks|length > 0 %}
+                                            {% for task in tasks %}
+                                                <div class="w-layout-blockcontainer container-5 w-container task-item" data-task-id="{{ task.id }}">
+                                                    <div>
+                                                        <input type="checkbox"
+                                                            class="task-status-checkbox"
+                                                            {% if task.status %}checked{% endif %}
+                                                            data-task-id="{{ task.id }}"
+                                                            style="width:18px;height:18px;vertical-align:middle;"/>
+                                                    </div>
+                                                    <div class="text-block-3">
+                                                        {{ task.title }}
+                                                    </div>
+                                                    <div class="text-block-4">
+                                                        {% if task.completion_date %}{{ task.completion_date }}{% else %}-{% endif %}
+                                                    </div>
+                                                    <details class="task-details">
+                                                        <summary class="task-details-summary">
+                                                            Details
+                                                        </summary>
+                                                        {% if task.tags %}
+                                                            <div class="hashtag">
+                                                                {% for tag in task.tags|safe|from_json %}
+                                                                    #{{ tag }}
+                                                                {% endfor %}
+                                                            </div>
+                                                        {% endif %}
+                                                        <div class="text-block-6">
+                                                            @{{ task.assigned_nick }}
+                                                        </div>
+                                                        <div class="number_red">{{ task.priority }}</div>
+                                                    </details>
+                                                    <div class="hashtag desktop-only">
+                                                        {% if task.tags %}
+                                                            {% for tag in task.tags|safe|from_json %}
+                                                                #{{ tag }}
+                                                            {% endfor %}
+                                                        {% endif %}
+                                                    </div>
+                                                    <div class="text-block-6 desktop-only">
+                                                        @{{ task.assigned_nick }}
+                                                    </div>
+                                                    <div class="number_red desktop-only">
+                                                        {{ task.priority }}
+                                                    </div>
                                                 </div>
-                                                <div class="text-block-6">
-                                                    @majonez
-                                                </div>
-                                                <div class="number_red">1</div>
-                                            </details>
-                                            <div class="hashtag desktop-only">
-                                                #kuchnia
-                                            </div>
-                                            <div
-                                                class="text-block-6 desktop-only"
-                                            >
-                                                @majonez
-                                            </div>
-                                            <div
-                                                class="number_red desktop-only"
-                                            >
-                                                1
-                                            </div>
-                                        </div>
-                                        <div
-                                            class="w-layout-blockcontainer container-5 w-container task-item"
-                                        >
-                                            <div class="check-icon-wrap">
-                                                <img
-                                                    width="14"
-                                                    height="12"
-                                                    alt="Icon"
-                                                    src="https://cdn.prod.website-files.com/681b1f21853d2d51a5088437/681b1f22853d2d51a50885e4_Check%20Icon.svg"
-                                                    loading="lazy"
-                                                    class="check-icon"
-                                                />
-                                            </div>
-                                            <div class="text-block-3">
-                                                Subscribe to Newsletter
-                                            </div>
-                                            <div class="text-block-4">
-                                                21.07.2025
-                                            </div>
-                                            <details class="task-details">
-                                                <summary
-                                                    class="task-details-summary"
-                                                >
-                                                    Details
-                                                </summary>
-                                                <div class="hashtag">
-                                                    #kuchnia
-                                                </div>
-                                                <div class="text-block-6">
-                                                    @majonez
-                                                </div>
-                                                <div class="number_orange">
-                                                    2
-                                                </div>
-                                            </details>
-                                            <div class="hashtag desktop-only">
-                                                #kuchnia
-                                            </div>
-                                            <div
-                                                class="text-block-6 desktop-only"
-                                            >
-                                                @majonez
-                                            </div>
-                                            <div
-                                                class="number_orange desktop-only"
-                                            >
-                                                2
-                                            </div>
-                                        </div>
-                                        <div
-                                            class="w-layout-blockcontainer container-5 w-container task-item"
-                                        >
-                                            <div class="check-icon-wrap">
-                                                <img
-                                                    width="14"
-                                                    height="12"
-                                                    alt="Icon"
-                                                    src="https://cdn.prod.website-files.com/681b1f21853d2d51a5088437/681b1f22853d2d51a50885e4_Check%20Icon.svg"
-                                                    loading="lazy"
-                                                    class="check-icon"
-                                                />
-                                            </div>
-                                            <div class="text-block-3">
-                                                Subscribe to Newsletter
-                                            </div>
-                                            <div class="text-block-4">
-                                                21.07.2025
-                                            </div>
-                                            <details class="task-details">
-                                                <summary
-                                                    class="task-details-summary"
-                                                >
-                                                    Details
-                                                </summary>
-                                                <div class="hashtag">
-                                                    #kuchnia
-                                                </div>
-                                                <div class="text-block-6">
-                                                    @majonez
-                                                </div>
-                                                <div class="number_green">
-                                                    3
-                                                </div>
-                                            </details>
-                                            <div class="hashtag desktop-only">
-                                                #kuchnia
-                                            </div>
-                                            <div
-                                                class="text-block-6 desktop-only"
-                                            >
-                                                @majonez
-                                            </div>
-                                            <div
-                                                class="number_green desktop-only"
-                                            >
-                                                3
-                                            </div>
-                                        </div>
-                                        <div
-                                            class="w-layout-blockcontainer container-5 w-container task-item"
-                                        >
-                                            <div class="check-icon-wrap">
-                                                <img
-                                                    width="14"
-                                                    height="12"
-                                                    alt="Icon"
-                                                    src="https://cdn.prod.website-files.com/681b1f21853d2d51a5088437/681b1f22853d2d51a50885e4_Check%20Icon.svg"
-                                                    loading="lazy"
-                                                    class="check-icon"
-                                                />
-                                            </div>
-                                            <div class="text-block-3">
-                                                Subscribe to Newsletter
-                                            </div>
-                                            <div class="text-block-4">
-                                                21.07.2025
-                                            </div>
-                                            <details class="task-details">
-                                                <summary
-                                                    class="task-details-summary"
-                                                >
-                                                    Details
-                                                </summary>
-                                                <div class="hashtag">
-                                                    #kuchnia
-                                                </div>
-                                                <div class="text-block-6">
-                                                    @majonez
-                                                </div>
-                                                <div class="number_blue">4</div>
-                                            </details>
-                                            <div class="hashtag desktop-only">
-                                                #kuchnia
-                                            </div>
-                                            <div
-                                                class="text-block-6 desktop-only"
-                                            >
-                                                @majonez
-                                            </div>
-                                            <div
-                                                class="number_blue desktop-only"
-                                            >
-                                                4
-                                            </div>
-                                        </div>
+                                            {% endfor %}
+                                        {% else %}
+                                            <div>No tasks assigned to you.</div>
+                                        {% endif %}
                                     </div>
                                 </div>
                             </div>
@@ -743,6 +632,28 @@
                                 menuButton.click(); // Simulate menu button click to close dropdown
                             }
                         }
+                    });
+                });
+            });
+
+            document.addEventListener('DOMContentLoaded', function() {
+                document.querySelectorAll('.task-status-checkbox').forEach(function(checkbox) {
+                    checkbox.addEventListener('change', function() {
+                        const taskId = this.getAttribute('data-task-id');
+                        const status = this.checked ? 1 : 0;
+                        fetch('{{ url_for("tasks") }}', {
+                            method: 'POST',
+                            headers: {
+                                'Content-Type': 'application/json',
+                                'X-Requested-With': 'XMLHttpRequest'
+                            },
+                            body: JSON.stringify({task_id: taskId, status: status})
+                        })
+                        .then(response => response.json())
+                        .then(data => {
+                            // Optionally, you can show a toast or update UI
+                            // No need to remove or reorder tasks, backend orders on reload
+                        });
                     });
                 });
             });
