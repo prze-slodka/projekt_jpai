@@ -4,7 +4,10 @@
 #settings
     naprawić aby dla admina zespołu przycisk do usuwania members był po prawiej stronie od membera a nie po lewej
     kolor przy zespole bo się zjebał na jasny
-
-#stats
-    naprawić coś się zepsuło nie ma css i sie rozjeżdża
     
+#tasks
+    dodać funkcjonalność dodawania tasków (wyskakujące okienko które przyciemnia resztę żeby można było dodać task)
+    kolumna z teamsami do wywalenia - zostawić tylko nazwę aktualnego teamu do którego należy użytkownik
+    skończone zadania wywalić z tasks - są w stats 
+#stats
+    dodać ogranicznik - wyświetla tylko 3 ostatnie ukończone zadania 
