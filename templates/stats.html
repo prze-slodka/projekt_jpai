@@ -1,6 +1,6 @@
 <!-- templates/stats.html -->
 <!-- todo adjust to flask bo cos nie dziala -->
-<!-- todo w main section trzeba by zmienić nazwy klas bo tam jest chyba z tego template i nazywają się price/pricing -->
+<!-- todo w main section trzeba by zmienić nazwy klas bo tam jest chyba z tego template i nazywają się stats/stats -->
 <!DOCTYPE html>
 <html
     lang="en"
@@ -147,134 +147,87 @@
                                 <div class="heading-2 text-weight-bold">
                                     Completed tasks:
                                 </div>
-                                <div class="stats-check-list">
-                                    <div class="stats-check-item">
-                                        <div class="stats-check-icon">
-                                            <img
-                                                width="14"
-                                                height="12"
-                                                alt="Check Icon"
-                                                src="{{ url_for('static', filename='images/check_icon.svg') }}"
-                                                loading="lazy"
-                                                class="stats-check"
-                                            />
+                                <div class="stats-check-list" style="display: flex; flex-direction: column; align-items: center; margin-bottom: 2rem;">
+                                    {% for title in completed_titles %}
+                                        <div class="stats-check-item" style="display: flex; align-items: center; gap: 12px;">
+                                            <div class="stats-check-icon">
+                                                <input type="checkbox" checked disabled style="width: 16px; height: 16px; accent-color: #4CAF50; cursor: default;" aria-label="Completed" />
+                                            </div>
+                                            <div class="text-size-medium">
+                                                {{ title }}
+                                            </div>
                                         </div>
-                                        <div class="text-size-medium">
-                                            Task A completed
+                                    {% else %}
+                                        <div class="stats-check-item">
+                                            <div class="text-size-medium">
+                                                No completed tasks yet.
+                                            </div>
+                                        </div>
+                                    {% endfor %}
+                                </div>
+                            </div>
+                        </div>
+                        <div class="stats-grid-wrapper">
+                            <div class="stats-grid">
+                                <div class="stats-card dark-grey">
+                                    <div class="stats-card-content">
+                                        <div class="stats-card-heading">
+                                            <div class="text-size-small text-weight-medium">
+                                                Completed this week:
+                                            </div>
+                                            <div class="stats-value">
+                                                <div class="heading-3 text-weight-bold">
+                                                    {{ completed_week }}
+                                                </div>
+                                                <div class="margin-bottom-05">
+                                                    <div class="text-size-large">
+                                                        tasks
+                                                    </div>
+                                                </div>
+                                            </div>
                                         </div>
                                     </div>
-                                    <div class="stats-check-item">
-                                        <div class="stats-check-icon">
-                                            <img
-                                                width="14"
-                                                height="12"
-                                                alt="Check Icon"
-                                                src="{{ url_for('static', filename='images/check_icon.svg') }}"
-                                                loading="lazy"
-                                                class="stats-check"
-                                            />
-                                        </div>
-                                        <div class="text-size-medium">
-                                            Task B completed
+                                </div>
+                                <div class="stats-card bright-grey">
+                                    <div class="stats-card-content">
+                                        <div class="stats-card-heading">
+                                            <div class="text-size-small text-weight-medium">
+                                                Completed this month:
+                                            </div>
+                                            <div class="stats-value">
+                                                <div class="heading-3 text-weight-bold">
+                                                    {{ completed_month }}
+                                                </div>
+                                                <div class="margin-bottom-05">
+                                                    <div class="text-size-large">
+                                                        tasks
+                                                    </div>
+                                                </div>
+                                            </div>
                                         </div>
                                     </div>
-                                    <div class="stats-check-item">
-                                        <div class="stats-check-icon">
-                                            <img
-                                                width="14"
-                                                height="12"
-                                                alt="Check Icon"
-                                                src="{{ url_for('static', filename='images/check_icon.svg') }}"
-                                                loading="lazy"
-                                                class="stats-check"
-                                            />
-                                        </div>
-                                        <div class="text-size-medium">
-                                            Task C completed
+                                </div>
+                                <div class="stats-card dark-grey">
+                                    <div class="stats-card-content">
+                                        <div class="stats-card-heading">
+                                            <div class="text-size-small text-weight-medium">
+                                                Completed today:
+                                            </div>
+                                            <div class="stats-value">
+                                                <div class="heading-3 text-weight-bold">
+                                                    {{ completed_today }}
+                                                </div>
+                                                <div class="margin-bottom-05">
+                                                    <div class="text-size-large">
+                                                        tasks
+                                                    </div>
+                                                </div>
+                                            </div>
                                         </div>
                                     </div>
                                 </div>
                             </div>
                         </div>
-
-                        <div class="stats-grid-wrapper">
-                            <div class="stats-grid">
-                                <div class="stat-card">
-                                    <div class="stat-card-content">
-                                        <div class="stat-card-heading">
-                                            <div
-                                                class="text-size-small text-weight-medium"
-                                            >
-                                                Completed this week:
-                                            </div>
-                                            <div class="stat-value">
-                                                <div
-                                                    class="heading-3 text-weight-bold"
-                                                >
-                                                    32
-                                                </div>
-                                                <div class="margin-bottom-05">
-                                                    <div
-                                                        class="text-size-large"
-                                                    >
-                                                        tasks
-                                                    </div>
-                                                </div>
-                                            </div>
-                                        </div>
-                                    </div>
-                                </div>
-                                <div class="stat-card dark-grey">
-                                    <div class="stat-card-content">
-                                        <div class="stat-card-heading">
-                                            <div
-                                                class="text-size-small text-weight-medium"
-                                            >
-                                                Completed this month:
-                                            </div>
-                                            <div class="stat-value">
-                                                <div
-                                                    class="heading-3 text-weight-bold"
-                                                >
-                                                    241
-                                                </div>
-                                                <div class="margin-bottom-05">
-                                                    <div
-                                                        class="text-size-large"
-                                                    >
-                                                        tasks
-                                                    </div>
-                                                </div>
-                                            </div>
-                                        </div>
-                                    </div>
-                                </div>
-                                <div class="stat-card">
-                                    <div class="stat-card-content">
-                                        <div class="stat-card-heading">
-                                            <div
-                                                class="text-size-small text-weight-medium"
-                                            >
-                                                Completed today:
-                                            </div>
-                                            <div class="stat-value">
-                                                <div
-                                                    class="heading-3 text-weight-bold"
-                                                >
-                                                    12
-                                                </div>
-                                                <div class="margin-bottom-05">
-                                                    <div
-                                                        class="text-size-large"
-                                                    >
-                                                        tasks
-                                                    </div>
-                                                </div>
-                                            </div>
-                                        </div>
-                                    </div>
-                                </div>
-                            </div>
                         </div>
                     </div>
                 </div>

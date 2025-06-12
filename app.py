@@ -244,10 +244,18 @@ def tasks():
         task_id = data.get('task_id')
         new_status = data.get('status')
         if task_id is not None and new_status in (0, 1, True, False):
-            cursor.execute(
-                "UPDATE tasks SET status=%s WHERE id=%s AND assigned_user=%s",
-                (1 if new_status else 0, task_id, user_id)
-            )
+            if new_status:
+                # Mark as completed and set completion_date to now
+                cursor.execute(
+                    "UPDATE tasks SET status=1, completion_date=%s WHERE id=%s AND assigned_user=%s",
+                    (datetime.now().date(), task_id, user_id)
+                )
+            else:
+                # Mark as not completed and clear completion_date
+                cursor.execute(
+                    "UPDATE tasks SET status=0, completion_date=NULL WHERE id=%s AND assigned_user=%s",
+                    (task_id, user_id)
+                )
             db.commit()
             cursor.close()
             db.close()
