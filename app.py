@@ -238,9 +238,59 @@ def tasks():
     cursor = db.cursor(dictionary=True)
     user_id = session['user_id']
 
-    # Handle AJAX completion toggle
+    # Dodawanie nowego taska przez AJAX
     if request.method == 'POST' and request.is_json:
         data = request.get_json()
+        # Dodawanie taska
+        if data.get('add_task'):
+            title = data.get('title', '').strip()
+            priority = data.get('priority')
+            tags = data.get('tags', '')
+            assigned_user = data.get('assigned_user')
+            completion_date = data.get('completion_date')
+            team_fk = session.get('team_fk')
+            # Walidacja
+            if not (title and priority and assigned_user and team_fk):
+                cursor.close()
+                db.close()
+                return jsonify(success=False, error="Missing required fields"), 400
+            try:
+                priority = int(priority)
+                if priority < 1 or priority > 4:
+                    raise ValueError
+            except Exception:
+                cursor.close()
+                db.close()
+                return jsonify(success=False, error="Invalid priority"), 400
+            # Sprawdź czy assigned_user należy do teamu
+            cursor.execute("SELECT id FROM users WHERE id=%s AND team_fk=%s", (assigned_user, team_fk))
+            if not cursor.fetchone():
+                cursor.close()
+                db.close()
+                return jsonify(success=False, error="User not in your team"), 400
+            # Przetwórz tagi
+            tags_list = [t.strip() for t in tags.split(',') if t.strip()]
+            tags_json = json.dumps(tags_list)
+            # Data
+            if completion_date:
+                try:
+                    datetime.strptime(completion_date, "%Y-%m-%d")
+                except Exception:
+                    cursor.close()
+                    db.close()
+                    return jsonify(success=False, error="Invalid date"), 400
+            else:
+                completion_date = None
+            # Dodaj taska
+            cursor.execute(
+                "INSERT INTO tasks (team_id, title, status, completion_date, tags, assigned_user, priority) VALUES (%s, %s, 0, %s, %s, %s, %s)",
+                (team_fk, title, completion_date, tags_json, assigned_user, priority)
+            )
+            db.commit()
+            cursor.close()
+            db.close()
+            return jsonify(success=True)
+        # ...istniejąca obsługa zmiany statusu...
         task_id = data.get('task_id')
         new_status = data.get('status')
         if task_id is not None and new_status in (0, 1, True, False):

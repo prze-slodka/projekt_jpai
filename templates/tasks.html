@@ -52,9 +52,10 @@
                 vertical-align: middle;
                 position: relative;
             }
+            /* Zmieniono zielony na niebieski bright-grey */
             .task-status-checkbox:checked {
-                background: #4caf50;
-                border-color: #4caf50;
+                background: #4D7D8D;
+                border-color: #4D7D8D;
             }
             .task-status-checkbox:checked::after {
                 content: '';
@@ -541,7 +542,17 @@
                                                         <div class="text-block-6">
                                                             @{{ task.assigned_nick }}
                                                         </div>
-                                                        <div class="number_red">{{ task.priority }}</div>
+                                                        <div
+                                                            {% if task.priority == 1 %}
+                                                                class="number_blue"
+                                                            {% elif task.priority == 2 %}
+                                                                class="number_green"
+                                                            {% elif task.priority == 3 %}
+                                                                class="number_orange"
+                                                            {% else %}
+                                                                class="number_red"
+                                                            {% endif %}
+                                                        >{{ task.priority }}</div>
                                                     </details>
                                                     <div class="hashtag desktop-only">
                                                         {% if task.tags %}
@@ -553,9 +564,17 @@
                                                     <div class="text-block-6 desktop-only">
                                                         @{{ task.assigned_nick }}
                                                     </div>
-                                                    <div class="number_red desktop-only">
-                                                        {{ task.priority }}
-                                                    </div>
+                                                    <div
+                                                        {% if task.priority == 1 %}
+                                                            class="number_blue desktop-only"
+                                                        {% elif task.priority == 2 %}
+                                                            class="number_green desktop-only"
+                                                        {% elif task.priority == 3 %}
+                                                            class="number_orange desktop-only"
+                                                        {% else %}
+                                                            class="number_red desktop-only"
+                                                        {% endif %}
+                                                    >{{ task.priority }}</div>
                                                 </div>
                                             {% endfor %}
                                         {% else %}
@@ -569,6 +588,100 @@
                 </div>
             </div>
         </section>
+
+        <!-- Modal do dodawania taska -->
+        <div id="add-task-modal" style="display:none; position:fixed; z-index:1001; left:0; top:0; width:100vw; height:100vh; align-items:center; justify-content:center;">
+            <div id="modal-backdrop" style="position:fixed; left:0; top:0; width:100vw; height:100vh; background:rgba(0,0,0,0.5);"></div>
+            <div style="
+                background: #23272f;
+                color: #dfebee;
+                padding: 32px 24px;
+                border-radius: 12px;
+                z-index: 1002;
+                min-width: 320px;
+                max-width: 90vw;
+                position: relative;
+                margin: auto;
+                box-shadow: 0 8px 32px rgba(0,0,0,0.45);
+                border: 1px solid #353b45;
+            ">
+                <button id="close-modal-btn" style="
+                    position:absolute;
+                    top:8px;
+                    right:8px;
+                    background: none;
+                    color: #dfebee;
+                    border: none;
+                    font-size: 2rem;
+                    cursor: pointer;
+                    opacity: 0.7;
+                    transition: opacity 0.2s;
+                ">&times;</button>
+                <h3 style="margin-top:0; color:#dfebee;">Add Task</h3>
+                <form id="add-task-form">
+                    <div style="margin-bottom:10px;">
+                        <label>Title:<br>
+                            <input type="text" name="title" required style="width:100%;background:#18181b;color:#dfebee;border:1px solid #353b45;border-radius:4px;padding:6px;">
+                        </label>
+                    </div>
+                    <div style="margin-bottom:10px;">
+                        <label>Priority:<br>
+                            <select name="priority" required style="width:100%;background:#18181b;color:#dfebee;border:1px solid #353b45;border-radius:4px;padding:6px;">
+                                <option value="1">1 (Low)</option>
+                                <option value="2">2</option>
+                                <option value="3">3</option>
+                                <option value="4">4 (High)</option>
+                            </select>
+                        </label>
+                    </div>
+                    <div style="margin-bottom:10px;">
+                        <label>Tags (comma separated):<br>
+                            <input type="text" name="tags" style="width:100%;background:#18181b;color:#dfebee;border:1px solid #353b45;border-radius:4px;padding:6px;">
+                        </label>
+                    </div>
+                    <div style="margin-bottom:10px;">
+                        <label>Assign to:<br>
+                            <select name="assigned_user" required style="width:100%;background:#18181b;color:#dfebee;border:1px solid #353b45;border-radius:4px;padding:6px;">
+                                {% for user in team_users %}
+                                    <option value="{{ user.id }}">{{ user.nick }}</option>
+                                {% endfor %}
+                            </select>
+                        </label>
+                    </div>
+                    <div style="margin-bottom:10px;">
+                        <label>Completion date:<br>
+                            <input type="date" name="completion_date" style="width:100%;background:#18181b;color:#dfebee;border:1px solid #353b45;border-radius:4px;padding:6px;">
+                        </label>
+                    </div>
+                    <button type="submit" style="
+                        background: #4D7D8D;
+                        color: #fff;
+                        border: none;
+                        border-radius: 4px;
+                        padding: 10px 24px;
+                        font-size: 1rem;
+                        font-weight: bold;
+                        cursor: pointer;
+                        margin-top: 8px;
+                        transition: background 0.2s;
+                    ">Add</button>
+                </form>
+                <div id="add-task-error" style="color:#ed5145; margin-top:8px; display:none;"></div>
+            </div>
+        </div>
+        <style>
+            #add-task-modal[style*="display: flex"] ~ *:not(#add-task-modal) {
+                filter: blur(2px);
+                pointer-events: none;
+                user-select: none;
+            }
+            #add-task-modal input, #add-task-modal select {
+                outline: none;
+            }
+            #close-modal-btn:hover {
+                opacity: 1;
+            }
+        </style>
 
         <footer class="section">
             <div class="padding-global">
@@ -657,6 +770,98 @@
                     });
                 });
             });
+
+            // Modal obsługa
+            document.addEventListener('DOMContentLoaded', function() {
+                const modal = document.getElementById('add-task-modal');
+                const openBtn = document.getElementById('add-task-btn');
+                const closeBtn = document.getElementById('close-modal-btn');
+                const backdrop = document.getElementById('modal-backdrop');
+                function openModal() {
+                    modal.style.display = 'flex';
+                    modal.style.alignItems = 'center';
+                    modal.style.justifyContent = 'center';
+                }
+                function closeModal() {
+                    modal.style.display = 'none';
+                    document.getElementById('add-task-form').reset();
+                    document.getElementById('add-task-error').style.display = 'none';
+                }
+                openBtn.addEventListener('click', openModal);
+                closeBtn.addEventListener('click', closeModal);
+                backdrop.addEventListener('click', closeModal);
+
+                // Obsługa wysyłania formularza AJAX
+                document.getElementById('add-task-form').addEventListener('submit', function(e) {
+                    e.preventDefault();
+                    const form = e.target;
+                    const data = {
+                        title: form.title.value,
+                        priority: form.priority.value,
+                        tags: form.tags.value,
+                        assigned_user: form.assigned_user.value,
+                        completion_date: form.completion_date.value
+                    };
+                    fetch('{{ url_for("tasks") }}', {
+                        method: 'POST',
+                        headers: {
+                            'Content-Type': 'application/json',
+                            'X-Requested-With': 'XMLHttpRequest'
+                        },
+                        body: JSON.stringify({ add_task: true, ...data })
+                    })
+                    .then(resp => resp.json())
+                    .then(resp => {
+                        if (resp.success) {
+                            window.location.reload();
+                        } else {
+                            document.getElementById('add-task-error').textContent = resp.error || 'Error adding task';
+                            document.getElementById('add-task-error').style.display = 'block';
+                        }
+                    })
+                    .catch(() => {
+                        document.getElementById('add-task-error').textContent = 'Error adding task';
+                        document.getElementById('add-task-error').style.display = 'block';
+                    });
+                });
+            });
         </script>
+
+        <!-- Floating Add Task Button -->
+        <button id="add-task-btn" title="Add Task" style="
+            position: fixed;
+            right: 32px;
+            bottom: 32px;
+            width: 56px;
+            height: 56px;
+            border-radius: 50%;
+            background: #4D7D8D;
+            color: #fff;
+            border: none;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.18);
+            font-size: 32px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            z-index: 1100;
+            cursor: pointer;
+            transition: background 0.2s;
+        ">
+            <span style="font-size:36px;line-height:1;">+</span>
+        </button>
+        <style>
+            #add-task-btn:hover {
+                background: #36647a;
+            }
+            @media (max-width: 600px) {
+                #add-task-btn {
+                    right: 16px;
+                    bottom: 16px;
+                    width: 48px;
+                    height: 48px;
+                    font-size: 28px;
+                }
+            }
+        </style>
     </body>
 </html>
