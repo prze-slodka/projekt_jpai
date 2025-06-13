@@ -6,8 +6,6 @@
     kolor przy zespole bo się zjebał na jasny
     
 #tasks
-    dodać funkcjonalność dodawania tasków (wyskakujące okienko które przyciemnia resztę żeby można było dodać task)
-    kolumna z teamsami do wywalenia - zostawić tylko nazwę aktualnego teamu do którego należy użytkownik
     skończone zadania wywalić z tasks - są w stats 
 #stats
     dodać ogranicznik - wyświetla tylko 3 ostatnie ukończone zadania 

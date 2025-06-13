@@ -322,9 +322,14 @@ def tasks():
     tasks = cursor.fetchall()
     cursor.execute("SELECT id, nick FROM users WHERE team_fk=%s", (session.get('team_fk'),))
     team_users = cursor.fetchall()
+    # Dodaj pobranie teamu użytkownika
+    team = None
+    if session.get('team_fk'):
+        cursor.execute("SELECT * FROM team WHERE id=%s", (session.get('team_fk'),))
+        team = cursor.fetchone()
     cursor.close()
     db.close()
-    return render_template('tasks.html', tasks=tasks, team_users=team_users)
+    return render_template('tasks.html', tasks=tasks, team_users=team_users, team=team)
 
 if __name__ == '__main__':
     app.run(debug=True)
