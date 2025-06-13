@@ -141,6 +141,24 @@
                 <div class="w-layout-blockcontainer container w-container">
                     <div class="hero-wrapper">
                         <div class="hero-component">
+                            <!-- Notyfikacje -->
+                            {% if messages %}
+                                <div style="margin-bottom: 1.5rem;">
+                                    {% for category, msg in messages %}
+                                        <div style="
+                                            padding: 12px 18px;
+                                            border-radius: 6px;
+                                            margin-bottom: 8px;
+                                            color: #fff;
+                                            background: {% if category == 'success' %}#4D7D8D{% else %}#ed5145{% endif %};
+                                            font-weight: 500;
+                                            box-shadow: 0 2px 8px rgba(0,0,0,0.08);
+                                        ">
+                                            {{ msg }}
+                                        </div>
+                                    {% endfor %}
+                                </div>
+                            {% endif %}
                             <!-- Page Heading -->
                             <div class="max-width-70ch">
                                 <div class="heading-2 text-weight-bold">
@@ -247,6 +265,64 @@
                                                     type="text"
                                                     id="team-name"
                                                     value="{{ team.name }}"
+                                                    readonly
+                                                    style="
+                                                        width: 200px;
+                                                        display: inline-block;
+                                                        margin-right: 1rem;
+                                                        background: #eee;
+                                                    "
+                                                />
+                                            {% endif %}
+                                        </div>
+                                        <!-- Invite code section -->
+                                        <div
+                                            class="name-wrapper-contact"
+                                            style="margin-bottom: 1.5rem"
+                                        >
+                                            <label
+                                                for="invite-code"
+                                                class="text-size-medium-vw"
+                                            >
+                                                Invite code:
+                                            </label>
+                                            {% if is_leader %}
+                                                <form method="POST" action="/settings" style="display:inline;">
+                                                    <input
+                                                        class="text-field-contact w-input"
+                                                        maxlength="64"
+                                                        name="invite_code"
+                                                        placeholder="Invite code"
+                                                        type="text"
+                                                        id="invite-code"
+                                                        value="{{ team.invite_code }}"
+                                                        style="
+                                                            width: 200px;
+                                                            display: inline-block;
+                                                            margin-right: 1rem;
+                                                        "
+                                                    />
+                                                    <button
+                                                        type="submit"
+                                                        name="action"
+                                                        value="change_invite_code"
+                                                        class="primary-button w-button"
+                                                        style="
+                                                            display: inline-block;
+                                                            vertical-align: middle;
+                                                        "
+                                                    >
+                                                        Change
+                                                    </button>
+                                                </form>
+                                            {% else %}
+                                                <input
+                                                    class="text-field-contact w-input"
+                                                    maxlength="64"
+                                                    name="invite_code"
+                                                    type="text"
+                                                    id="invite-code"
+                                                    value="{{ team.invite_code }}"
                                                     readonly
                                                     style="
                                                         width: 200px;

@@ -1,4 +1,4 @@
-from flask import Flask, render_template, redirect, url_for, request, session, flash, jsonify
+from flask import Flask, render_template, redirect, url_for, request, session, flash, jsonify, get_flashed_messages
 import mysql.connector
 import hashlib
 import json
@@ -125,7 +125,7 @@ def settings():
                 cursor.execute("UPDATE users SET team_fk=%s WHERE id=%s", (found_team['id'], user_id))
                 db.commit()
                 session['team_fk'] = found_team['id']
-                flash('Joined team successfully')
+                flash('Joined team successfully', 'success')
                 # Refresh user/team info
                 cursor.execute("SELECT * FROM users WHERE id=%s", (user_id,))
                 user = cursor.fetchone()
@@ -136,20 +136,29 @@ def settings():
                     cursor.execute("SELECT id, nick FROM users WHERE team_fk=%s", (user['team_fk'],))
                     team_users = cursor.fetchall()
             else:
-                flash('Invalid team code')
+                flash('Invalid team code', 'error')
         elif action == 'change_team_name' and team and is_leader:
             new_name = request.form.get('team_name', '').strip()
             if new_name:
                 cursor.execute("UPDATE team SET name=%s WHERE id=%s", (new_name, team['id']))
                 db.commit()
-                flash('Team name updated')
+                flash('Team name updated', 'success')
                 team['name'] = new_name
+        elif action == 'change_invite_code' and team and is_leader:
+            new_code = request.form.get('invite_code', '').strip()
+            if new_code:
+                cursor.execute("UPDATE team SET invite_code=%s WHERE id=%s", (new_code, team['id']))
+                db.commit()
+                flash('Invite code updated', 'success')
+                team['invite_code'] = new_code
+            else:
+                flash('Invite code cannot be empty', 'error')
         elif action == 'remove_member' and team and is_leader:
             remove_user_id = request.form.get('remove_user_id')
             if remove_user_id and str(remove_user_id) != str(user_id):
                 cursor.execute("UPDATE users SET team_fk=NULL WHERE id=%s", (remove_user_id,))
                 db.commit()
-                flash('User removed from team')
+                flash('User removed from team', 'success')
                 # Refresh team_users
                 cursor.execute("SELECT id, nick FROM users WHERE team_fk=%s", (team['id'],))
                 team_users = cursor.fetchall()
@@ -165,7 +174,7 @@ def settings():
                 (json.dumps(notification_settings), user_id)
             )
             db.commit()
-            flash('Settings updated')
+            flash('Settings updated', 'success')
     cursor.close()
     db.close()
     return render_template(
@@ -174,7 +183,8 @@ def settings():
         team=team,
         team_users=team_users,
         is_leader=is_leader,
-        notification_settings=notification_settings
+        notification_settings=notification_settings,
+        messages=get_flashed_messages(with_categories=True)
     )
 
 @app.route('/stats')
