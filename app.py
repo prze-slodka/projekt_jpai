@@ -59,7 +59,8 @@ def register():
         login = request.form['login']
         email = request.form['email']
         password = request.form['password']
-        nick = "Maciek"
+        # Nick = login
+        nick = login
         password_hash = hashlib.sha256(password.encode()).hexdigest()
         db = get_db()
         cursor = db.cursor()
@@ -136,7 +137,32 @@ def settings():
                     cursor.execute("SELECT id, nick FROM users WHERE team_fk=%s", (user['team_fk'],))
                     team_users = cursor.fetchall()
             else:
-                flash('Invalid team code', 'error')
+                # Stwórz nowy team z tym kodem i losową nazwą
+                import random, string
+                random_name = "Team_" + ''.join(random.choices(string.ascii_uppercase + string.digits, k=6))
+                try:
+                    cursor.execute(
+                        "INSERT INTO team (name, invite_code, owner) VALUES (%s, %s, %s)",
+                        (random_name, team_code, user_id)
+                    )
+                    db.commit()
+                    new_team_id = cursor.lastrowid
+                    cursor.execute("UPDATE users SET team_fk=%s WHERE id=%s", (new_team_id, user_id))
+                    db.commit()
+                    session['team_fk'] = new_team_id
+                    flash('Created new team and joined as leader', 'success')
+                    # Refresh user/team info
+                    cursor.execute("SELECT * FROM users WHERE id=%s", (user_id,))
+                    user = cursor.fetchone()
+                    cursor.execute("SELECT * FROM team WHERE id=%s", (user['team_fk'],))
+                    team = cursor.fetchone()
+                    if team:
+                        is_leader = (team.get('owner') == user_id)
+                        cursor.execute("SELECT id, nick FROM users WHERE team_fk=%s", (user['team_fk'],))
+                        team_users = cursor.fetchall()
+                except Exception:
+                    db.rollback()
+                    flash('Could not create team. Invite code may already exist.', 'error')
         elif action == 'change_team_name' and team and is_leader:
             new_name = request.form.get('team_name', '').strip()
             if new_name:
