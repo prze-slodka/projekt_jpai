@@ -69,6 +69,11 @@
                 border-width: 0 2px 2px 0;
                 transform: rotate(45deg);
             }
+            .task-completed {
+                opacity: 0.55;
+                filter: grayscale(0.25);
+                transition: opacity 0.2s, filter 0.2s;
+            }
         </style>
     </head>
     <body class="body">
@@ -204,7 +209,7 @@
                                         <div class="text-block-2">Tasks:</div>
                                         {% if tasks and tasks|length > 0 %}
                                             {% for task in tasks %}
-                                                <div class="w-layout-blockcontainer container-5 w-container task-item" data-task-id="{{ task.id }}">
+                                                <div class="w-layout-blockcontainer container-5 w-container task-item{% if task.status %} task-completed{% endif %}" data-task-id="{{ task.id }}">
                                                     <div>
                                                         <input type="checkbox"
                                                             class="task-status-checkbox"
@@ -444,6 +449,15 @@
                     checkbox.addEventListener('change', function() {
                         const taskId = this.getAttribute('data-task-id');
                         const status = this.checked ? 1 : 0;
+                        // Dodaj/usuń klasę wyszarzającą natychmiast
+                        const taskDiv = this.closest('.task-item');
+                        if (taskDiv) {
+                            if (this.checked) {
+                                taskDiv.classList.add('task-completed');
+                            } else {
+                                taskDiv.classList.remove('task-completed');
+                            }
+                        }
                         fetch('{{ url_for("tasks") }}', {
                             method: 'POST',
                             headers: {
