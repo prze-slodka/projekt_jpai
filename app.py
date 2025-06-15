@@ -320,6 +320,25 @@ def tasks():
             cursor.close()
             db.close()
             return jsonify(success=True)
+        # Usuwanie taska (nie tylko completed)
+        if data.get('delete_task') and data.get('task_id'):
+            task_id = data.get('task_id')
+            try:
+                task_id_int = int(task_id)
+            except Exception:
+                cursor.close()
+                db.close()
+                return jsonify(success=False, error="Invalid task id"), 400
+            # Usuwa tylko jeśli task należy do usera (niezależnie od statusu)
+            cursor.execute("DELETE FROM tasks WHERE id=%s AND assigned_user=%s", (task_id_int, user_id))
+            db.commit()
+            deleted = cursor.rowcount
+            cursor.close()
+            db.close()
+            if deleted > 0:
+                return jsonify(success=True)
+            else:
+                return jsonify(success=False, error="Task not found or not yours"), 400
         cursor.close()
         db.close()
         return jsonify(success=False), 400
@@ -340,6 +359,94 @@ def tasks():
     cursor.close()
     db.close()
     return render_template('tasks.html', tasks=tasks, team_users=team_users, team=team)
+
+@app.route('/api/notifications')
+def api_notifications():
+    if 'user_id' not in session:
+        return jsonify(notifications=[])
+    db = get_db()
+    cursor = db.cursor(dictionary=True)
+    cursor.execute("SELECT notification_settings FROM users WHERE id=%s", (session['user_id'],))
+    user = cursor.fetchone()
+    notifications = []
+    settings = {}
+    if user and user.get('notification_settings'):
+        try:
+            settings = json.loads(user['notification_settings'])
+        except Exception:
+            settings = {}
+    now = datetime.now()
+
+    # NEW TASK NOTIFICATION (ostatnie 5 minut)
+    if settings.get('new_task'):
+        cursor.execute(
+            "SELECT id, title, created_at FROM tasks WHERE assigned_user=%s AND status=0 AND created_at >= %s",
+            (session['user_id'], (now - timedelta(minutes=5)).strftime("%Y-%m-%d %H:%M:%S"))
+        )
+        for task in cursor.fetchall():
+            notif_id = f"new_task_{task['id']}_{task['created_at']}"
+            notifications.append({
+                "id": notif_id,
+                "msg": f"You have a new task assigned: {task['title']}"
+            })
+
+    # TASK COMPLETED NOTIFICATION (ostatnie 5 minut, w teamie)
+    if settings.get('task_completed'):
+        cursor.execute(
+            "SELECT id, title, completion_date, assigned_user FROM tasks WHERE team_id=%s AND status=1 AND completion_date >= %s",
+            (session.get('team_fk'), (now - timedelta(minutes=5)).strftime("%Y-%m-%d"))
+        )
+        for task in cursor.fetchall():
+            if task['assigned_user'] != session['user_id']:
+                notif_id = f"task_completed_{task['id']}_{task['completion_date']}"
+                notifications.append({
+                    "id": notif_id,
+                    "msg": f"Task '{task['title']}' was completed in your team!"
+                })
+
+    # UPCOMING DEADLINE NOTIFICATION (deadline w ciągu 24h, nieukończone)
+    if settings.get('upcoming_deadline'):
+        cursor.execute(
+            "SELECT id, title, completion_date FROM tasks WHERE assigned_user=%s AND status=0 AND completion_date IS NOT NULL",
+            (session['user_id'],)
+        )
+        for task in cursor.fetchall():
+            try:
+                deadline = task['completion_date']
+                if isinstance(deadline, str):
+                    deadline = datetime.strptime(deadline, "%Y-%m-%d")
+                if now.date() <= deadline <= (now + timedelta(days=1)).date():
+                    notif_id = f"upcoming_deadline_{task['id']}_{task['completion_date']}"
+                    notifications.append({
+                        "id": notif_id,
+                        "msg": f"Task '{task['title']}' has a deadline soon ({task['completion_date']})!"
+                    })
+            except Exception:
+                pass
+
+    # DEADLINE MISSED NOTIFICATION (deadline minął, nieukończone)
+    if settings.get('deadline_missed'):
+        cursor.execute(
+            "SELECT id, title, completion_date FROM tasks WHERE assigned_user=%s AND status=0 AND completion_date IS NOT NULL",
+            (session['user_id'],)
+        )
+        for task in cursor.fetchall():
+            try:
+                deadline = task['completion_date']
+                if isinstance(deadline, str):
+                    deadline = datetime.strptime(deadline, "%Y-%m-%d")
+                if deadline < now.date():
+                    notif_id = f"deadline_missed_{task['id']}_{task['completion_date']}"
+                    notifications.append({
+                        "id": notif_id,
+                        "msg": f"You missed the deadline for task '{task['title']}' ({task['completion_date']})!"
+                    })
+            except Exception:
+                pass
+
+    cursor.close()
+    db.close()
+    return jsonify(notifications=notifications)
 
 if __name__ == '__main__':
     app.run(debug=True)

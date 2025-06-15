@@ -270,6 +270,18 @@
                                                             class="number_red desktop-only"
                                                         {% endif %}
                                                     >{{ task.priority }}</div>
+                                                    {% if task.status %}
+                                                        <button class="remove-task-btn" data-task-id="{{ task.id }}" title="Remove task" style="
+                                                            background: none;
+                                                            border: none;
+                                                            color: #ed5145;
+                                                            font-size: 1.3em;
+                                                            margin-left: 10px;
+                                                            cursor: pointer;
+                                                            opacity: 0.8;
+                                                            transition: opacity 0.2s;
+                                                        ">&times;</button>
+                                                    {% endif %}
                                                 </div>
                                             {% endfor %}
                                         {% else %}
@@ -377,6 +389,27 @@
                 opacity: 1;
             }
         </style>
+
+        <!-- Kontener na powiadomienia -->
+        <div id="notif-toast" style="
+            display:none;
+            position:fixed;
+            right:32px;
+            bottom:100px;
+            min-width:220px;
+            max-width:90vw;
+            background:#23272f;
+            color:#dfebee;
+            border-radius:8px;
+            box-shadow:0 4px 16px rgba(0,0,0,0.25);
+            padding:18px 24px;
+            z-index:9999;
+            font-size:1.05em;
+            font-weight:500;
+            opacity:0.97;
+            transition:opacity 0.2s;
+            pointer-events:auto;
+        "></div>
 
         <footer class="section">
             <div class="padding-global">
@@ -529,6 +562,87 @@
                     });
                 });
             });
+
+            // Usuwanie tasków (przycisk X)
+            document.addEventListener('DOMContentLoaded', function() {
+                document.body.addEventListener('click', function(e) {
+                    if (e.target && e.target.classList.contains('remove-task-btn')) {
+                        e.preventDefault();
+                        const taskId = e.target.getAttribute('data-task-id');
+                        if (confirm('Are you sure you want to delete this task?')) {
+                            fetch('{{ url_for("tasks") }}', {
+                                method: 'POST',
+                                headers: {
+                                    'Content-Type': 'application/json',
+                                    'X-Requested-With': 'XMLHttpRequest'
+                                },
+                                body: JSON.stringify({ delete_task: true, task_id: taskId })
+                            })
+                            .then(resp => resp.json())
+                            .then(resp => {
+                                if (resp.success) {
+                                    // Usuń task z DOM
+                                    const taskDiv = document.querySelector('.task-item[data-task-id="' + taskId + '"]');
+                                    if (taskDiv) taskDiv.remove();
+                                } else {
+                                    alert(resp.error || 'Error deleting task');
+                                }
+                            })
+                            .catch(() => {
+                                alert('Error deleting task');
+                            });
+                        }
+                    }
+                });
+            });
+
+            // Helpers for cookies
+            function getSeenNotifs() {
+                const val = document.cookie.split('; ').find(row => row.startsWith('seen_notifs='));
+                if (!val) return [];
+                try {
+                    return JSON.parse(decodeURIComponent(val.split('=')[1]));
+                } catch { return []; }
+            }
+            function setSeenNotifs(arr) {
+                document.cookie = "seen_notifs=" + encodeURIComponent(JSON.stringify(arr)) + ";path=/;max-age=31536000";
+            }
+            function showNotif(msg) {
+                console.log("showNotif:", msg);
+                const toast = document.getElementById('notif-toast');
+                toast.textContent = msg;
+                toast.style.display = 'block';
+                toast.style.opacity = '0.97';
+                toast.style.zIndex = '9999';
+                setTimeout(() => {
+                    toast.style.opacity = '0';
+                    setTimeout(() => { toast.style.display = 'none'; }, 400);
+                }, 5000);
+            }
+            function pollNotifications() {
+                fetch('/api/notifications')
+                    .then(resp => resp.json())
+                    .then(data => {
+                        console.log("Notifications response:", data);
+                        if (data && data.notifications && data.notifications.length > 0) {
+                            let seen = getSeenNotifs();
+                            let newSeen = [...seen];
+                            data.notifications.forEach(n => {
+                                if (!seen.includes(n.id)) {
+                                    showNotif(n.msg);
+                                    newSeen.push(n.id);
+                                }
+                            });
+                            if (newSeen.length > 100) newSeen = newSeen.slice(-100);
+                            setSeenNotifs(newSeen);
+                        }
+                    })
+                    .catch(err => {
+                        console.error("Notifications fetch error:", err);
+                    });
+            }
+            setInterval(pollNotifications, 5 * 60 * 1000); // co 5 min
+            pollNotifications();
         </script>
 
         <!-- Floating Add Task Button -->

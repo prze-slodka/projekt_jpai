@@ -571,5 +571,49 @@
             src="/static/js/webflow-script.js"
             type="text/javascript"
         ></script>
+        <script>
+        // Helpers for cookies
+        function getSeenNotifs() {
+            const val = document.cookie.split('; ').find(row => row.startsWith('seen_notifs='));
+            if (!val) return [];
+            try {
+                return JSON.parse(decodeURIComponent(val.split('=')[1]));
+            } catch { return []; }
+        }
+        function setSeenNotifs(arr) {
+            document.cookie = "seen_notifs=" + encodeURIComponent(JSON.stringify(arr)) + ";path=/;max-age=31536000";
+        }
+        function showNotif(msg) {
+            const toast = document.getElementById('notif-toast');
+            toast.textContent = msg;
+            toast.style.display = 'block';
+            toast.style.opacity = '0.97';
+            setTimeout(() => {
+                toast.style.opacity = '0';
+                setTimeout(() => { toast.style.display = 'none'; }, 400);
+            }, 5000);
+        }
+        function pollNotifications() {
+            fetch('/api/notifications')
+                .then(resp => resp.json())
+                .then(data => {
+                    if (data && data.notifications && data.notifications.length > 0) {
+                        let seen = getSeenNotifs();
+                        let newSeen = [...seen];
+                        data.notifications.forEach(n => {
+                            if (!seen.includes(n.id)) {
+                                showNotif(n.msg);
+                                newSeen.push(n.id);
+                            }
+                        });
+                        // Zachowaj tylko ostatnie 100 id (dla bezpieczeństwa)
+                        if (newSeen.length > 100) newSeen = newSeen.slice(-100);
+                        setSeenNotifs(newSeen);
+                    }
+                });
+        }
+        setInterval(pollNotifications, 5 * 60 * 1000); // co 5 min
+        pollNotifications();
+    </script>
     </body>
 </html>
