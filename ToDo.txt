@@ -1,12 +1,6 @@
 #comments
     komentarze do main + do innych plików
-
-#settings
-    guzik przy notification naprawić
-    naprawić aby dla admina zespołu przycisk do usuwania members był po prawiej stronie od membera a nie po lewej
 #tasks
     skończone zadania wywalić z tasks - są w stats 
 #stats
     dodać ogranicznik - wyświetla tylko 3 ostatnie ukończone zadania 
-#login
-    guzik pod formularzem do zalogowania
