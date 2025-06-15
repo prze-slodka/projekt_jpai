@@ -370,18 +370,21 @@
                                                                     name="remove_user_id"
                                                                     value="{{ member.id }}"
                                                                 />
-                                                                <button
-                                                                    type="submit"
-                                                                    name="action"
-                                                                    value="remove_member"
-                                                                    class="primary-button w-button"
-                                                                    style="
-                                                                        padding: 2px 8px;
-                                                                        font-size: 0.9em;
-                                                                    "
-                                                                >
-                                                                    Remove
-                                                                </button>
+                                                                <div style="display: flex; justify-content: center; align-items: center;">
+                                                                    <button
+                                                                        type="submit"
+                                                                        name="action"
+                                                                        value="remove_member"
+                                                                        class="primary-button w-button"
+                                                                        style="
+                                                                            margin-top: 20px;
+                                                                            padding: 2px 8px;
+                                                                            font-size: 0.9em;
+                                                                        "
+                                                                    >
+                                                                        Remove
+                                                                    </button>
+                                                                </div>
                                                             </form>
                                                         {% endif %}
                                                     </li>
@@ -516,6 +519,7 @@
                                                 data-wait="Please wait"
                                                 class="submit w-button"
                                             />
+                                                Save
                                         </div>
                                     </div>
                                 </div>
