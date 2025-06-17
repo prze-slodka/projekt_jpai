@@ -1,9 +1,14 @@
+# Taskoinator Flask Application
+# Author: POWERPUFF GIRLS
+# Main backend logic for user, team, task, notification, and stats management.
+
 from flask import Flask, render_template, redirect, url_for, request, session, flash, jsonify, get_flashed_messages
 import mysql.connector
 import hashlib
 import json
 from datetime import datetime, timedelta
 
+# Flask app setup
 app = Flask(
     __name__,
     static_folder='static',
@@ -11,7 +16,7 @@ app = Flask(
 )
 app.secret_key = 'to_change'  # Change this in production
 
-# Add this filter after app creation
+# Jinja2 filter for parsing JSON in templates
 @app.template_filter('from_json')
 def from_json_filter(s):
     try:
@@ -19,6 +24,7 @@ def from_json_filter(s):
     except Exception:
         return []
 
+# Database connection helper
 def get_db():
     return mysql.connector.connect(
         host="mysql.agh.edu.pl",
@@ -27,12 +33,17 @@ def get_db():
         database="akoncew1"
     )
 
+# --- ROUTES ---
+
+# Landing page
 @app.route('/')
 def index():
     return render_template('index.html')
 
+# Login page and logic
 @app.route('/login', methods=['GET', 'POST'])
 def login():
+    # Redirect if already logged in
     if 'user_id' in session:
         return redirect(url_for('tasks'))
     if request.method == 'POST':
@@ -44,6 +55,7 @@ def login():
         user = cursor.fetchone()
         cursor.close()
         db.close()
+        # Password check
         if user and user['password_hash'] == hashlib.sha256(password.encode()).hexdigest():
             session['user_id'] = user['id']
             session['nick'] = user['nick']
@@ -53,6 +65,7 @@ def login():
             flash('Invalid login or password')
     return render_template('login.html')
 
+# Registration page and logic
 @app.route('/register', methods=['GET', 'POST'])
 def register():
     if request.method == 'POST':
@@ -79,11 +92,13 @@ def register():
             db.close()
     return render_template('register.html')
 
+# Logout logic
 @app.route('/logout')
 def logout():
     session.clear()
     return redirect(url_for('index'))
 
+# Settings page: team management and notification settings
 @app.route('/settings', methods=['GET', 'POST'])
 def settings():
     if 'user_id' not in session:
@@ -109,6 +124,7 @@ def settings():
             notification_settings.update(json.loads(user['notification_settings']))
         except Exception:
             pass
+    # If user is in a team, fetch team and members
     if user['team_fk']:
         cursor.execute("SELECT * FROM team WHERE id=%s", (user['team_fk'],))
         team = cursor.fetchone()
@@ -116,6 +132,7 @@ def settings():
             is_leader = (team.get('owner') == user_id)
             cursor.execute("SELECT id, nick FROM users WHERE team_fk=%s", (user['team_fk'],))
             team_users = cursor.fetchall()
+    # Handle settings form actions
     if request.method == 'POST':
         action = request.form.get('action')
         if action == 'join_team':
@@ -123,6 +140,7 @@ def settings():
             cursor.execute("SELECT id FROM team WHERE invite_code=%s", (team_code,))
             found_team = cursor.fetchone()
             if found_team:
+                # Join existing team
                 cursor.execute("UPDATE users SET team_fk=%s WHERE id=%s", (found_team['id'], user_id))
                 db.commit()
                 session['team_fk'] = found_team['id']
@@ -137,7 +155,7 @@ def settings():
                     cursor.execute("SELECT id, nick FROM users WHERE team_fk=%s", (user['team_fk'],))
                     team_users = cursor.fetchall()
             else:
-                # Stwórz nowy team z tym kodem i losową nazwą
+                # Create new team with this code and random name
                 import random, string
                 random_name = "Team_" + ''.join(random.choices(string.ascii_uppercase + string.digits, k=6))
                 try:
@@ -213,6 +231,7 @@ def settings():
         messages=get_flashed_messages(with_categories=True)
     )
 
+# Stats page: completed tasks and summary
 @app.route('/stats')
 def stats():
     if 'user_id' not in session:
@@ -266,6 +285,7 @@ def stats():
         team_completed=team_completed
     )
 
+# Main tasks page: view, add, update, delete tasks (AJAX)
 @app.route('/tasks', methods=['GET', 'POST'])
 def tasks():
     if 'user_id' not in session:
@@ -274,10 +294,10 @@ def tasks():
     cursor = db.cursor(dictionary=True)
     user_id = session['user_id']
 
-    # Dodawanie nowego taska przez AJAX
+    # AJAX POST: add, update, or delete tasks
     if request.method == 'POST' and request.is_json:
         data = request.get_json()
-        # Dodawanie taska
+        # Add new task
         if data.get('add_task'):
             title = data.get('title', '').strip()
             priority = data.get('priority')
@@ -285,7 +305,7 @@ def tasks():
             assigned_user = data.get('assigned_user')
             completion_date = data.get('completion_date')
             team_fk = session.get('team_fk')
-            # Walidacja
+            # Validation
             if not (title and priority and assigned_user and team_fk):
                 cursor.close()
                 db.close()
@@ -298,16 +318,16 @@ def tasks():
                 cursor.close()
                 db.close()
                 return jsonify(success=False, error="Invalid priority"), 400
-            # Sprawdź czy assigned_user należy do teamu
+            # Check if assigned_user is in team
             cursor.execute("SELECT id FROM users WHERE id=%s AND team_fk=%s", (assigned_user, team_fk))
             if not cursor.fetchone():
                 cursor.close()
                 db.close()
                 return jsonify(success=False, error="User not in your team"), 400
-            # Przetwórz tagi
+            # Process tags
             tags_list = [t.strip() for t in tags.split(',') if t.strip()]
             tags_json = json.dumps(tags_list)
-            # Data
+            # Date validation
             if completion_date:
                 try:
                     datetime.strptime(completion_date, "%Y-%m-%d")
@@ -317,7 +337,7 @@ def tasks():
                     return jsonify(success=False, error="Invalid date"), 400
             else:
                 completion_date = None
-            # Dodaj taska
+            # Insert task
             cursor.execute(
                 "INSERT INTO tasks (team_id, title, status, completion_date, tags, assigned_user, priority) VALUES (%s, %s, 0, %s, %s, %s, %s)",
                 (team_fk, title, completion_date, tags_json, assigned_user, priority)
@@ -326,7 +346,7 @@ def tasks():
             cursor.close()
             db.close()
             return jsonify(success=True)
-        # ...istniejąca obsługa zmiany statusu...
+        # Update task status
         task_id = data.get('task_id')
         new_status = data.get('status')
         if task_id is not None and new_status in (0, 1, True, False):
@@ -346,7 +366,7 @@ def tasks():
             cursor.close()
             db.close()
             return jsonify(success=True)
-        # Usuwanie taska (nie tylko completed)
+        # Delete task (owned by user)
         if data.get('delete_task') and data.get('task_id'):
             task_id = data.get('task_id')
             try:
@@ -355,7 +375,7 @@ def tasks():
                 cursor.close()
                 db.close()
                 return jsonify(success=False, error="Invalid task id"), 400
-            # Usuwa tylko jeśli task należy do usera (niezależnie od statusu)
+            # Only delete if task belongs to user
             cursor.execute("DELETE FROM tasks WHERE id=%s AND assigned_user=%s", (task_id_int, user_id))
             db.commit()
             deleted = cursor.rowcount
@@ -369,7 +389,7 @@ def tasks():
         db.close()
         return jsonify(success=False), 400
 
-    # Get all tasks assigned to this user, order unfinished first
+    # GET: show all tasks assigned to this user
     cursor.execute(
         "SELECT t.*, u.nick as assigned_nick FROM tasks t LEFT JOIN users u ON t.assigned_user=u.id WHERE t.assigned_user=%s ORDER BY t.status ASC, t.id ASC",
         (user_id,)
@@ -377,7 +397,7 @@ def tasks():
     tasks = cursor.fetchall()
     cursor.execute("SELECT id, nick FROM users WHERE team_fk=%s", (session.get('team_fk'),))
     team_users = cursor.fetchall()
-    # Dodaj pobranie teamu użytkownika
+    # Get user's team
     team = None
     if session.get('team_fk'):
         cursor.execute("SELECT * FROM team WHERE id=%s", (session.get('team_fk'),))
@@ -386,6 +406,7 @@ def tasks():
     db.close()
     return render_template('tasks.html', tasks=tasks, team_users=team_users, team=team)
 
+# API endpoint for notifications (AJAX polled)
 @app.route('/api/notifications')
 def api_notifications():
     if 'user_id' not in session:
@@ -403,7 +424,7 @@ def api_notifications():
             settings = {}
     now = datetime.now()
 
-    # NEW TASK NOTIFICATION (ostatnie 5 minut)
+    # New task notification (last 5 min)
     if settings.get('new_task'):
         cursor.execute(
             "SELECT id, title, created_at FROM tasks WHERE assigned_user=%s AND status=0 AND created_at >= %s",
@@ -416,7 +437,7 @@ def api_notifications():
                 "msg": f"You have a new task assigned: {task['title']}"
             })
 
-    # TASK COMPLETED NOTIFICATION (ostatnie 5 minut, w teamie)
+    # Task completed notification (last 5 min, in team)
     if settings.get('task_completed'):
         cursor.execute(
             "SELECT id, title, completion_date, assigned_user FROM tasks WHERE team_id=%s AND status=1 AND completion_date >= %s",
@@ -430,7 +451,7 @@ def api_notifications():
                     "msg": f"Task '{task['title']}' was completed in your team!"
                 })
 
-    # UPCOMING DEADLINE NOTIFICATION (deadline w ciągu 24h, nieukończone)
+    # Upcoming deadline notification (within 24h, not completed)
     if settings.get('upcoming_deadline'):
         cursor.execute(
             "SELECT id, title, completion_date FROM tasks WHERE assigned_user=%s AND status=0 AND completion_date IS NOT NULL",
@@ -450,7 +471,7 @@ def api_notifications():
             except Exception:
                 pass
 
-    # DEADLINE MISSED NOTIFICATION (deadline minął, nieukończone)
+    # Missed deadline notification (deadline passed, not completed)
     if settings.get('deadline_missed'):
         cursor.execute(
             "SELECT id, title, completion_date FROM tasks WHERE assigned_user=%s AND status=0 AND completion_date IS NOT NULL",
@@ -474,5 +495,6 @@ def api_notifications():
     db.close()
     return jsonify(notifications=notifications)
 
+# Run the Flask app
 if __name__ == '__main__':
     app.run(debug=True)

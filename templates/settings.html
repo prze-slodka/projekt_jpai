@@ -1,5 +1,6 @@
 <!-- templates/settings.html -->
 <!DOCTYPE html>
+<!-- Settings page for team management and notification preferences -->
 <html
     lang="en"
     data-wf-page="681b1f22853d2d51a5088579"
@@ -136,6 +137,7 @@
         </div>
 
         <!-- Main Settings Section -->
+        <!-- Contains team join/create, team management, and notification settings -->
         <section>
             <div class="padding-global">
                 <div class="w-layout-blockcontainer container w-container">
@@ -596,7 +598,7 @@
         function pollNotifications() {
             fetch('/api/notifications')
                 .then(resp => resp.json())
-                .then(data => {
+                .then data => {
                     if (data && data.notifications && data.notifications.length > 0) {
                         let seen = getSeenNotifs();
                         let newSeen = [...seen];

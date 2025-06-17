@@ -1,4 +1,2 @@
-#comments
-    komentarze do main + do innych plików
-#tasks
-    skończone zadania wywalić z tasks - są w stats 
+To do:
+    ALL DONE!

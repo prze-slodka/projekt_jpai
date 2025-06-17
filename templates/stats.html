@@ -1,6 +1,5 @@
 <!-- templates/stats.html -->
-<!-- todo adjust to flask bo cos nie dziala -->
-<!-- todo w main section trzeba by zmienić nazwy klas bo tam jest chyba z tego template i nazywają się stats/stats -->
+<!-- User statistics page: completed tasks and summary -->
 <!DOCTYPE html>
 <html
     lang="en"
@@ -46,6 +45,7 @@
         />
     </head>
     <body class="body-2">
+        <!-- Navigation Bar -->
         <div
             class="navbar w-nav"
             data-animation="default"
@@ -138,6 +138,7 @@
             </div>
         </div>
 
+        <!-- Main stats section: shows completed tasks and stats cards -->
         <section>
             <div class="padding-global">
                 <div class="w-layout-blockcontainer container w-container">
@@ -234,6 +235,7 @@
             </div>
         </section>
 
+        <!-- Footer Section -->
         <footer class="section">
             <div class="padding-global">
                 <div class="w-layout-blockcontainer container w-container">
@@ -258,6 +260,7 @@
             </div>
         </footer>
 
+        <!-- JS Scripts -->
         <script
             src="{{ url_for('static', filename='js/jquery.js') }}"
             type="text/javascript"

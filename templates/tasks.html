@@ -1,4 +1,5 @@
 <!DOCTYPE html>
+<!-- Main tasks page for Taskoinator: add, view, complete, and delete tasks -->
 <html
     data-wf-page="681b1f22853d2d51a5088570"
     data-wf-site="681b1f21853d2d51a5088437"
@@ -77,6 +78,7 @@
         </style>
     </head>
     <body class="body">
+        <!-- Navigation Bar -->
         <div
             data-animation="default"
             data-collapse="medium"
@@ -167,6 +169,7 @@
             </div>
         </div>
 
+        <!-- Main section: task list and team info -->
         <section>
             <div class="padding-global">
                 <div class="w-layout-blockcontainer container w-container">
@@ -296,7 +299,7 @@
             </div>
         </section>
 
-        <!-- Modal do dodawania taska -->
+        <!-- Modal for adding a task -->
         <div id="add-task-modal" style="display:none; position:fixed; z-index:1001; left:0; top:0; width:100vw; height:100vh; align-items:center; justify-content:center;">
             <div id="modal-backdrop" style="position:fixed; left:0; top:0; width:100vw; height:100vh; background:rgba(0,0,0,0.5);"></div>
             <div style="
@@ -390,7 +393,7 @@
             }
         </style>
 
-        <!-- Kontener na powiadomienia -->
+        <!-- Notification toast container -->
         <div id="notif-toast" style="
             display:none;
             position:fixed;
@@ -411,6 +414,7 @@
             pointer-events:auto;
         "></div>
 
+        <!-- Footer Section -->
         <footer class="section">
             <div class="padding-global">
                 <div class="w-layout-blockcontainer container w-container">
@@ -438,6 +442,7 @@
             </div>
         </footer>
 
+        <!-- Scripts: task actions, modal, notifications, etc. -->
         <script
             src="{{ url_for('static', filename='js/jquery.js') }}"
             type="text/javascript"
