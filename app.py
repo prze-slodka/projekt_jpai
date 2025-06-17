@@ -7,6 +7,15 @@ import mysql.connector
 import hashlib
 import json
 from datetime import datetime, timedelta
+from dotenv import load_dotenv
+import os
+
+load_dotenv()
+
+DATABASE_HOST=os.getenv("DATABASE_HOST", "localhost")
+DATABASE_USER=os.getenv("DATABASE_USER", "root")
+DATABASE_PASSWORD=os.getenv("DATABASE_PASSWORD", "password")
+DATABASE_NAME=os.getenv("DATABASE_NAME", "database")
 
 # Flask app setup
 app = Flask(
@@ -27,10 +36,10 @@ def from_json_filter(s):
 # Database connection helper
 def get_db():
     return mysql.connector.connect(
-        host="mysql.agh.edu.pl",
-        user="akoncew1",
-        password="EFq1FdGFBvf1PrgF",
-        database="akoncew1"
+        host=DATABASE_HOST,
+        user=DATABASE_USER,
+        password=DATABASE_PASSWORD,
+        database=DATABASE_NAME
     )
 
 # --- ROUTES ---
